@@ -1,0 +1,105 @@
+# {{PROJECT_NAME}} — Agent Operating Rules (GEMINI.md)
+
+> Antigravity (and most agent tools that support a persistent rules file)
+> reads this automatically on every session start. This is the "who and how"
+> layer: standing rules that apply to every prompt, every agent, every
+> workspace. Task-specific capabilities live in `/skills`. Deep domain
+> reference material lives in `/docs` and should be indexed via your tool's
+> knowledge base / RAG feature, not pasted into this file.
+>
+> **Rename this file to `GEMINI.md` after filling in every `{{PLACEHOLDER}}`.**
+> See `docs/harness/CUSTOMIZATION.md` for a guided walkthrough.
+
+## 1. Project Identity
+
+{{PROJECT_NAME}} is {{ONE_SENTENCE_PROJECT_DESCRIPTION}}.
+
+{{OPTIONAL: reference a research/competitive doc here if one exists, e.g.
+"Reference docs/competitive-report.md for market context before proposing
+new features."}}
+
+## 2. Non-Negotiable Constraints
+
+Replace this section with the constraints that actually matter for your
+project. Common categories, with examples — delete what doesn't apply and add
+what does:
+
+- **Budget/tooling constraints.** e.g. "Free-tier only. Do not add a paid
+  dependency or metered API without explicit approval — open an Issue tagged
+  `needs-decision` instead of integrating it silently."
+- **Data/credential handling.** e.g. "No real user credentials, PII, or
+  production secrets in code, logs, tests, or fixtures. Use sandbox/mock data
+  until there is an explicit, human-approved production secrets plan."
+- **Domain correctness.** e.g. "Any logic touching {{HIGH_STAKES_DOMAIN,
+  e.g. tax calculations / medical dosing / financial transactions}} must cite
+  a source and be flagged for human verification if you're not fully
+  confident — never guess and present it as fact."
+- **Autonomy limits.** "No `Always Proceed` / fully autonomous mode on
+  Implementation Plans. This workspace's artifact review policy stays on
+  manual review. Every Implementation Plan and Task List is reviewed by a
+  human before code changes are applied."
+
+## 3. Definition of Done (applies to every task)
+
+Adjust the specifics, but keep the shape — a task isn't complete until:
+
+1. Task List artifact reviewed and approved by a human.
+2. Implementation Plan artifact reviewed and approved by a human (skip only
+   for trivial, purely cosmetic, single-file changes with no logic).
+3. Code changes are accompanied by tests. No test = not done.
+4. A Walkthrough artifact is generated summarizing what changed, how it was
+   verified, and any screenshots/recordings from a browser/UI subagent.
+5. The Task List, Implementation Plan, and Walkthrough are copied verbatim
+   into `docs/agent-logs/<date>-<issue>-<slug>/` as a permanent, version
+   -controlled audit record (see `docs/agent-logs/README.md`).
+6. Changes are committed using Conventional Commits, referencing the Issue
+   number.
+7. A pull request is opened using `.github/PULL_REQUEST_TEMPLATE.md`, linking
+   the audit log folder, and is merged only after explicit human approval.
+
+## 4. High-Risk Changes Require Extra Scrutiny
+
+List the categories of change in *your* project that should never be merged
+on test-pass alone. Starting examples — replace with your actual high-risk
+domains:
+
+- {{e.g. "Anything that computes or displays a monetary amount, tax figure,
+  or financial total."}}
+- Anything that adds a new third-party dependency or API integration.
+- Anything that touches authentication, credential storage, or data
+  encryption.
+- Anything that changes a core data model / schema.
+- {{e.g. "Anything that adds a new external integration / connector."}}
+
+For these, invoke the `security-reviewer` skill before opening the PR, and
+run a secret-scanning pass on the diff prior to requesting review.
+
+## 5. Context Discipline
+
+- Keep this file limited to standing rules only. Do not let it grow into a
+  knowledge dump.
+- Task-specific "how to do X" capabilities belong in `/skills/<name>/SKILL.md`.
+- Deep reference material belongs in `/docs` and should be indexed for
+  retrieval (Antigravity Knowledge Base or equivalent), not inlined into
+  prompts.
+- On long tasks, summarize prior reasoning into the Task List / Implementation
+  Plan artifact rather than relying on raw chat history surviving the session.
+
+## 6. Working Agreement with {{YOUR_NAME}}
+
+- {{Describe your own technical background/comfort level briefly, so the
+  agent calibrates explanations correctly — e.g. "Comfortable with Python,
+  TypeScript, SQL, Git; explain architecture decisions, skip basic syntax
+  explanations."}}
+- Every non-trivial decision (framework choice, data model shape, integration
+  strategy) gets recorded as an ADR in `docs/adr/`, even if verbally approved
+  in chat — chat approval is not a durable record; the ADR is.
+- If a request conflicts with a constraint in Section 2, the agent should
+  stop and ask rather than finding a workaround.
+
+## 7. Repository Conventions
+
+- Branch naming: `issue/<number>-<short-slug>`.
+- Commit messages: Conventional Commits, referencing `#<issue-number>`.
+- All agent-produced planning/verification artifacts are persisted under
+  `docs/agent-logs/`. This is the audit trail — treat it as append-only.
